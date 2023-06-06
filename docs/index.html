@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Discord Server Information</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f2f2f2;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      text-align: center;
+      color: #333333;
+    }
+
+    .form {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      margin-right: 10px;
+      font-weight: bold;
+      color: #333333;
+    }
+
+    input[type="text"] {
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #cccccc;
+    }
+
+    button {
+      padding: 8px 20px;
+      border-radius: 4px;
+      background-color: #7289DA;
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+    }
+
+    #serverInfo {
+      display: none;
+      margin-top: 20px;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 4px;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .label {
+      font-weight: bold;
+      color: #333333;
+    }
+
+    .value {
+      margin-bottom: 10px;
+      color: #666666;
+    }
+  </style>
+</head>
+<body>
+  <h1>Discord Server Information</h1>
+  <form class="form" onsubmit="getServerInfo(event)">
+    <label for="inviteCode">Invite Code:</label>
+    <input type="text" id="inviteCode" required>
+    <button type="submit">Get Server Information</button>
+  </form>
+
+  <div id="serverInfo">
+    <div class="label">Invite Code:</div>
+    <div id="inviteCodeValue" class="value"></div>
+    <div class="label">Server ID:</div>
+    <div id="serverID" class="value"></div>
+    <div class="label">Server Name:</div>
+    <div id="serverName" class="value"></div>
+    <div class="label">Channel ID:</div>
+    <div id="channelID" class="value"></div>
+    <div class="label">Channel Name:</div>
+    <div id="channelName" class="value"></div>
+    <div class="label">Inviter ID:</div>
+    <div id="inviterID" class="value"></div>
+  </div>
+
+  <script>
+    function getServerInfo(event) {
+      event.preventDefault();
+
+      const inviteCode = document.getElementById("inviteCode").value.trim();
+      const apiUrl = `https://discord.com/api/v9/invites/${inviteCode}`;
+
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("inviteCodeValue").innerText = data.code;
+          document.getElementById("serverID").innerText = data.guild.id;
+          document.getElementById("serverName").innerText = data.guild.name;
+          document.getElementById("channelID").innerText = data.channel.id;
+          document.getElementById("channelName").innerText = data.channel.name;
+          document.getElementById("inviterID").innerText = data.inviter.id;
+          document.getElementById("serverInfo").style.display = "block";
+        })
+        .catch(error => {
+          console.log(error);
+          document.getElementById("serverInfo").style.display = "none";
+          alert("Failed to retrieve server information. Please check the invite code and try again.");
+        });
+    }
+  </script>
+</body>
+</html>
