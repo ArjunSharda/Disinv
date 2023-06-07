@@ -91,8 +91,8 @@
     <div id="channelID" class="value"></div>
     <div class="label">Channel Name:</div>
     <div id="channelName" class="value"></div>
-    <div class="label">Inviter ID:</div>
-    <div id="inviterID" class="value"></div>
+    <div class="label">Inviter:</div>
+    <div id="inviter" class="value"></div>
     <div class="label">Expires In:</div>
     <div id="expiresIn" class="value"></div>
     <div class="label">Description:</div>
@@ -118,7 +118,7 @@
                 document.getElementById("serverName").innerText = data.guild.name;
                 document.getElementById("channelID").innerText = data.channel.id;
                 document.getElementById("channelName").innerText = data.channel.name;
-                document.getElementById("inviterID").innerText = data.inviter.id;
+                document.getElementById("inviter").innerText = `${data.inviter.username}#${data.inviter.discriminator}`;
 
                 if (data.expires_at) {
                   const expiresIn = calculateExpiration(data.expires_at);
