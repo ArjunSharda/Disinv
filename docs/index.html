@@ -60,6 +60,16 @@
       margin-bottom: 10px;
       color: #666666;
     }
+
+    .flagged-yes {
+      color: #ff0000;
+      font-weight: bold;
+    }
+
+    .flagged-no {
+      color: #00ff00;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -87,6 +97,10 @@
     <div id="expiresIn" class="value"></div>
     <div class="label">Description:</div>
     <div id="description" class="value"></div>
+    <div class="label">Flagged?</div>
+    <div id="flagged" class="value"></div>
+    <div class="label">Reason:</div>
+    <div id="reason" class="value"></div>
   </div>
 
   <script>
@@ -119,7 +133,36 @@
                   document.getElementById("description").innerText = "No description provided";
                 }
 
-                document.getElementById("serverInfo").style.display = "block";
+                // Check server flagged status and set flag and reason
+                const serverID = data.guild.id;
+
+                fetch('flagged.json')
+                    .then(response => response.json())
+                    .then(flaggedData => {
+                        let isFlagged = false;
+                        let reasonHeader = "N/A";
+
+                        flaggedData.forEach(entry => {
+                          if (serverID === entry.server_id && entry.flagged) {
+                            isFlagged = true;
+                            reasonHeader = entry.reason;
+                          }
+                        });
+
+                        const flaggedStatus = isFlagged ? "Yes" : "No";
+                        const flaggedClass = isFlagged ? "flagged-yes" : "flagged-no";
+
+                        document.getElementById("flagged").innerText = flaggedStatus;
+                        document.getElementById("flagged").className = flaggedClass;
+                        document.getElementById("reason").innerText = reasonHeader;
+
+                        document.getElementById("serverInfo").style.display = "block";
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        document.getElementById("serverInfo").style.display = "none";
+                        alert("Failed to retrieve server information. Please check the invite code and try again.");
+                    });
             })
             .catch(error => {
                 console.log(error);
@@ -145,8 +188,8 @@
       return `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds`;
     }
   </script>
-<footer>
+  <footer>
     <p>&copy; 2023 Arjun Sharda. All Rights Reserved.</p>
-</footer>
+  </footer>
 </body>
 </html>
