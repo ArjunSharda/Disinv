@@ -87,28 +87,31 @@
 
   <script>
     function getServerInfo(event) {
-      event.preventDefault();
+        event.preventDefault();
 
-      const inviteCode = document.getElementById("inviteCode").value.trim();
-      const apiUrl = `https://discord.com/api/v9/invites/${inviteCode}`;
+        const inviteCode = document.getElementById("inviteCode").value.trim();
+        const apiUrl = `https://discord.com/api/v9/invites/${inviteCode}`;
 
-      fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById("inviteCodeValue").innerText = data.code;
-          document.getElementById("serverID").innerText = data.guild.id;
-          document.getElementById("serverName").innerText = data.guild.name;
-          document.getElementById("channelID").innerText = data.channel.id;
-          document.getElementById("channelName").innerText = data.channel.name;
-          document.getElementById("inviterID").innerText = data.inviter.id;
-          document.getElementById("serverInfo").style.display = "block";
-        })
-        .catch(error => {
-          console.log(error);
-          document.getElementById("serverInfo").style.display = "none";
-          alert("Failed to retrieve server information. Please check the invite code and try again.");
-        });
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("inviteCodeValue").innerText = data.code;
+                document.getElementById("serverID").innerText = data.guild.id;
+                document.getElementById("serverName").innerText = data.guild.name;
+                document.getElementById("channelID").innerText = data.channel.id;
+                document.getElementById("channelName").innerText = data.channel.name;
+                document.getElementById("inviterID").innerText = data.inviter.id;
+                document.getElementById("serverInfo").style.display = "block";
+            })
+            .catch(error => {
+                console.log(error);
+                document.getElementById("serverInfo").style.display = "none";
+                alert("Failed to retrieve server information. Please check the invite code and try again.");
+            });
     }
   </script>
+<footer>
+    <p>&copy; 2023 Arjun Sharda. All Rights Reserved.</p>
+</footer>
 </body>
 </html>
