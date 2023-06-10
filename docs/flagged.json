@@ -13,5 +13,10 @@
     "server_id": "1116095499582320823",
     "flagged": true,
     "reason": "Hatred against protected characteristics."
+  },
+  {
+    "server_id": "1116922134917292105",
+    "flagged": true,
+    "reason": "Encouraging other members to raid servers."
   }
 ]
