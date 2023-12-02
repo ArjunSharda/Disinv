@@ -1,21 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discord Server Information</title>
     <style>
+        :root {
+            --primary-color: #7289DA;
+            --secondary-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #cccccc;
+            --hover-color: #5469d4;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
             padding: 20px;
             background-color: #f2f2f2;
+            color: var(--text-color);
         }
 
         h1 {
             margin-bottom: 20px;
             text-align: center;
-            color: #333333;
         }
 
-        .form {
+        form {
             display: flex;
             align-items: center;
             margin-bottom: 20px;
@@ -24,28 +35,33 @@
         label {
             margin-right: 10px;
             font-weight: bold;
-            color: #333333;
         }
 
         input[type="text"] {
             padding: 8px;
             border-radius: 4px;
-            border: 1px solid #cccccc;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.3s ease-in-out;
         }
 
         button {
             padding: 8px 20px;
             border-radius: 4px;
-            background-color: #7289DA;
-            color: #ffffff;
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
             border: none;
             cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background-color: var(--hover-color);
         }
 
         #serverInfo {
             display: none;
             margin-top: 20px;
-            background-color: #ffffff;
+            background-color: var(--secondary-color);
             padding: 20px;
             border-radius: 4px;
             box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
@@ -53,7 +69,6 @@
 
         .label {
             font-weight: bold;
-            color: #333333;
         }
 
         .value {
@@ -73,126 +88,132 @@
     </style>
 </head>
 <body>
-<h1>Discord Server Information</h1>
-<form class="form" onsubmit="getServerInfo(event)">
-    <label for="inviteCode">Invite Code:</label>
-    <input type="text" id="inviteCode" required>
-    <button type="submit">Get Server Information</button>
-</form>
+    <h1>Discord Server Information</h1>
+    <form onsubmit="getServerInfo(event)">
+        <label for="inviteCode">Invite Code:</label>
+        <input type="text" id="inviteCode" required>
+        <button type="submit">Get Server Information</button>
+    </form>
 
-<div id="serverInfo">
-    <div class="label">Invite Code:</div>
-    <div id="inviteCodeValue" class="value"></div>
-    <div class="label">Server ID:</div>
-    <div id="serverID" class="value"></div>
-    <div class="label">Server Name:</div>
-    <div id="serverName" class="value"></div>
-    <div class="label">Channel ID:</div>
-    <div id="channelID" class="value"></div>
-    <div class="label">Channel Name:</div>
-    <div id="channelName" class="value"></div>
-    <div class="label">Inviter:</div>
-    <div id="inviter" class="value"></div>
-    <div class="label">Expires In:</div>
-    <div id="expiresIn" class="value"></div>
-    <div class="label">Description:</div>
-    <div id="description" class="value"></div>
-    <div class="label">Flagged?</div>
-    <div id="flagged" class="value"></div>
-    <div class="label">Reason:</div>
-    <div id="reason" class="value"></div>
-</div>
+    <div id="serverInfo">
+        <div class="label">Invite Code:</div>
+        <div id="inviteCodeValue" class="value"></div>
+        <div class="label">Server ID:</div>
+        <div id="serverID" class="value"></div>
+        <div class="label">Server Name:</div>
+        <div id="serverName" class="value"></div>
+        <div class="label">Channel ID:</div>
+        <div id="channelID" class="value"></div>
+        <div class="label">Channel Name:</div>
+        <div id="channelName" class="value"></div>
+        <div class="label">Inviter:</div>
+        <div id="inviter" class="value"></div>
+        <div class="label">Expires In:</div>
+        <div id="expiresIn" class="value"></div>
+        <div class="label">Server Description:</div>
+        <div id="description" class="value"></div>
+        <div class="label">Flagged?</div>
+        <div id="flagged" class="value"></div>
+        <div class="label">Reason:</div>
+        <div id="reason" class="value"></div>
+    </div>
 
-<script>
-    function getServerInfo(event) {
-        event.preventDefault();
+    <script>
+        function getServerInfo(event) {
+            event.preventDefault();
 
-        const inviteCode = document.getElementById("inviteCode").value.trim();
-        const apiUrl = `https://discord.com/api/v9/invites/${inviteCode}`;
+            let inviteCode = document.getElementById("inviteCode").value.trim();
+            const discordInviteRegex = /^https:\/\/discord\.gg\/([a-zA-Z0-9]+)$/i;
+            const match = inviteCode.match(discordInviteRegex);
 
-        fetch(apiUrl)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("inviteCodeValue").innerText = data.code;
-                document.getElementById("serverID").innerText = data.guild.id;
-                document.getElementById("serverName").innerText = data.guild.name;
-                document.getElementById("channelID").innerText = data.channel.id;
-                document.getElementById("channelName").innerText = data.channel.name;
-                document.getElementById("inviter").innerText = data.inviter
-                    ? `${data.inviter.username || "N/A"}#${data.inviter.discriminator || "N/A"}`
-                    : "N/A";
+            if (match) {
+                inviteCode = match[1];
+            }
 
+            const apiUrl = `https://discord.com/api/v9/invites/${inviteCode}`;
 
-                if (data.expires_at) {
-                    const expiresIn = calculateExpiration(data.expires_at);
-                    document.getElementById("expiresIn").innerText = expiresIn;
-                } else {
-                    document.getElementById("expiresIn").innerText = "This invite does not expire";
-                }
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("inviteCodeValue").innerText = data.code;
+                    document.getElementById("serverID").innerText = data.guild.id;
+                    document.getElementById("serverName").innerText = data.guild.name;
+                    document.getElementById("channelID").innerText = data.channel.id;
+                    document.getElementById("channelName").innerText = data.channel.name;
+                    document.getElementById("inviter").innerText = data.inviter
+                        ? `${data.inviter.username || "N/A"}#${data.inviter.discriminator || "N/A"}`
+                        : "N/A";
 
-                if (data.guild.description) {
-                    document.getElementById("description").innerText = data.guild.description;
-                } else {
-                    document.getElementById("description").innerText = "No description provided";
-                }
+                    if (data.expires_at) {
+                        const expiresIn = calculateExpiration(data.expires_at);
+                        document.getElementById("expiresIn").innerText = expiresIn;
+                    } else {
+                        document.getElementById("expiresIn").innerText = "This invite does not expire";
+                    }
 
-                // Check server flagged status and set flag and reason
-                const serverID = data.guild.id;
+                    if (data.guild.description) {
+                        document.getElementById("description").innerText = data.guild.description;
+                    } else {
+                        document.getElementById("description").innerText = "No description provided";
+                    }
 
-                fetch('flagged.json')
-                    .then(response => response.json())
-                    .then(flaggedData => {
-                        let isFlagged = false;
-                        let reasonHeader = "N/A";
+                    const serverID = data.guild.id;
 
-                        flaggedData.forEach(entry => {
-                            if (serverID === entry.server_id && entry.flagged) {
-                                isFlagged = true;
-                                reasonHeader = entry.reason;
-                            }
+                    fetch('flagged.json')
+                        .then(response => response.json())
+                        .then(flaggedData => {
+                            let isFlagged = false;
+                            let reasonHeader = "N/A";
+
+                            flaggedData.forEach(entry => {
+                                if (serverID === entry.server_id && entry.flagged) {
+                                    isFlagged = true;
+                                    reasonHeader = entry.reason;
+                                }
+                            });
+
+                            const flaggedStatus = isFlagged ? "Yes" : "No";
+                            const flaggedClass = isFlagged ? "flagged-yes" : "flagged-no";
+
+                            document.getElementById("flagged").innerText = flaggedStatus;
+                            document.getElementById("flagged").className = flaggedClass;
+                            document.getElementById("reason").innerText = reasonHeader;
+
+                            document.getElementById("serverInfo").style.display = "block";
+                        })
+                        .catch(error => {
+                            console.log(error);
+                            document.getElementById("serverInfo").style.display = "none";
+                            alert("Failed to retrieve server information. Please check the invite code and try again.");
                         });
-
-                        const flaggedStatus = isFlagged ? "Yes" : "No";
-                        const flaggedClass = isFlagged ? "flagged-yes" : "flagged-no";
-
-                        document.getElementById("flagged").innerText = flaggedStatus;
-                        document.getElementById("flagged").className = flaggedClass;
-                        document.getElementById("reason").innerText = reasonHeader;
-
-                        document.getElementById("serverInfo").style.display = "block";
-                    })
-                    .catch(error => {
-                        console.log(error);
-                        document.getElementById("serverInfo").style.display = "none";
-                        alert("Failed to retrieve server information. Please check the invite code and try again.");
-                    });
-            })
-            .catch(error => {
-                console.log(error);
-                document.getElementById("serverInfo").style.display = "none";
-                alert("Failed to retrieve server information. Please check the invite code and try again.");
-            });
-    }
-
-    function calculateExpiration(expirationDate) {
-        const expiryTime = new Date(expirationDate).getTime();
-        const currentTime = Date.now();
-        const timeRemaining = expiryTime - currentTime;
-
-        if (timeRemaining <= 0) {
-            return "Expired";
+                })
+                .catch(error => {
+                    console.log(error);
+                    document.getElementById("serverInfo").style.display = "none";
+                    alert("Failed to retrieve server information. Please check the invite code and try again.");
+                });
         }
 
-        const seconds = Math.floor((timeRemaining / 1000) % 60);
-        const minutes = Math.floor((timeRemaining / 1000 / 60) % 60);
-        const hours = Math.floor((timeRemaining / (1000 * 60 * 60)) % 24);
-        const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+        function calculateExpiration(expirationDate) {
+            const expiryTime = new Date(expirationDate).getTime();
+            const currentTime = Date.now();
+            const timeRemaining = expiryTime - currentTime;
 
-        return `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds`;
-    }
-</script>
-<footer>
-    <p>&copy; 2023 Arjun Sharda. All Rights Reserved.</p>
-</footer>
+            if (timeRemaining <= 0) {
+                return "Expired";
+            }
+
+            const seconds = Math.floor((timeRemaining / 1000) % 60);
+            const minutes = Math.floor((timeRemaining / 1000 / 60) % 60);
+            const hours = Math.floor((timeRemaining / (1000 * 60 * 60)) % 24);
+            const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+
+            return `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds`;
+        }
+    </script>
+
+    <footer>
+        <p>&copy; 2023 Arjun Sharda. All Rights Reserved.</p>
+    </footer>
 </body>
 </html>
